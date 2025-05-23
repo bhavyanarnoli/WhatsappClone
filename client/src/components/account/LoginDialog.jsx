@@ -1,7 +1,7 @@
 import { Dialog, Box, Typography, List, ListItem, styled } from "@mui/material";
 import { qrCodeImage } from "../constants/data";
 import { GoogleLogin } from '@react-oauth/google';
-import jwt_decode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 const dialogStyle = {
   height: '96%',
@@ -44,10 +44,17 @@ const StyledList = styled(List)`
     color: #4a4a4a;
   }
 `;
+const LowerHelpText = styled(Typography)`
+  font-size: 14px;
+  margin-top: 100px;
+  margin-bottom: 25px;
+  font-weight:  1000;
+  color:rgb(7, 80, 70);
+`;
 
 const LoginDialog = () => {
   const onLoginSuccess = (res) => {
-    const decoded = jwt_decode(res.credential);
+    const decoded = jwtDecode(res.credential); 
     console.log(decoded);
     };
 
@@ -61,8 +68,10 @@ const LoginDialog = () => {
       slotProps={{
         paper: {
           sx: dialogStyle,
-        },
+        }
+    
       }}
+      hideBackdrop={true}
     >
       <Component>
         <LeftContainer>
@@ -72,6 +81,7 @@ const LoginDialog = () => {
             <ListItem>2. Tap menu Settings and select WhatsApp Web</ListItem>
             <ListItem>3. Point your phone to this screen to capture the code</ListItem>
           </StyledList>
+          <LowerHelpText>Need help to get started? </LowerHelpText>
         </LeftContainer>
         <Box style={{ position: 'relative' }}> 
           <QrCode src={qrCodeImage} alt="QR Code" />
