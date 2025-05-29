@@ -2,6 +2,8 @@
 import Drawer from '@mui/material/Drawer';
 import { Box, Typography , styled} from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
+import ProfilePicture  from './ProfilePicture';
+
 const DrawerStyle = {
   left:20,
   top: 17,
@@ -27,8 +29,10 @@ const Component = styled(Box)`
   background:  #ededed;
   height: 85%
 
-`
-
+`;
+const Text = styled(Typography)`
+  font-size: 18px;
+`   
 
 const InfoDrawer = ({open, setOpen}) => {
   const handleClose = () => {
@@ -37,7 +41,7 @@ const InfoDrawer = ({open, setOpen}) => {
   return (
     <>
       <Drawer
-      open={setOpen}
+      open={open}
       onClose={handleClose}
       slotProps={{
         paper: {
@@ -47,11 +51,13 @@ const InfoDrawer = ({open, setOpen}) => {
       }}
       style = {{zIndex: 1500}}>
      <Header>
-        <ArrowBack onclick={handleClose} />
-        <Typography> Profile</Typography>
+        <ArrowBack onClick={handleClose} />
+        <Text> Profile</Text>
       </Header>
+      <Component>
+        <ProfilePicture />
+      </Component>
     </Drawer>
-      <Component></Component>
     </>
   )
 }
