@@ -27,17 +27,13 @@ const { account } = useContext(AccountContext);
     <>
 
       <Header>
-        <Toolbar>
-
-        </Toolbar>
+      <Toolbar></Toolbar>
       </Header>
       <ChatDialog />
     </>      
     :
     <> <LoginHeader>
-        <Toolbar>
-
-        </Toolbar>
+      <Toolbar></Toolbar>
       </LoginHeader>
       <LoginDialog /> 
     </>
