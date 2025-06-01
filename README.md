@@ -1,5 +1,10 @@
-Whatsapp Clone
+# Whatsapp Clone
 ### Made using the help of https://www.youtube.com/watch?v=95jrbQNlpzM&ab_channel=CodeforInterview
+
+### How to run the code?
+#### inside server folder  run npm start
+#### on another terminal inside client folder run npm start
+
 # Client
 ### client code contains the frontend and the react feature of login: (React.js & Material-UI)
 #### Google authentication for making accounts done using: **https://www.npmjs.com/package/@react-oauth/google** && use 
