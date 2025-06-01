@@ -1,7 +1,26 @@
-import express from 'express';  
-import Connection from './database/mongodb.js';
+import express from 'express';
+import connectDB from './database/data.js';
+import dotenv from 'dotenv';
+import route from './routes/route.js';
+import cors from 'cors';
+
+dotenv.config();
 const app = express();
-Connection();
-const PORT = 8000;
-// password: HDqpXdZcwvD7fzTs
-app.listen(PORT, () => console.log(`Server is running sucessfully on port ${PORT}`));
+const PORT = process.env.PORT || 8000;
+
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+connectDB().then(() => {
+  app.use('/', route); 
+  app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+  });
+
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Database connected successfully`);
+  });
+});
