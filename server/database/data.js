@@ -8,7 +8,7 @@ const connectDB = async () => {
       serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
       family: 4,
-      maxPoolSize: 10 
+      maxPoolSize: 20 
     });
     
     console.log("MongoDB Connected!");

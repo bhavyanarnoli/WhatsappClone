@@ -1,13 +1,19 @@
-export const addUser = (req, res) => {
-  console.log('Final request body:', req.body);
-  
-  if (!req.body || Object.keys(req.body).length === 0) {
-    console.warn('Empty request body received');
-    return res.status(400).json({ error: 'Request body is empty' });
-  }
+import User from '../model/User.js';
 
-  res.status(200).json({
-    receivedData: req.body,
-    message: "Successfully received data"
-  });
+export const addUser = async (req, res) => {
+  console.log('Final request body:', req.body);
+  try{
+    let exist = await User.findOne({sub: req.body.sub});
+    if( exist) {
+      res.status(200).json({msg: 'User already exists'});
+      return;
+    }
+    const newUser = new User( req.body ); 
+    await newUser.save();
+    return res.status(200).json(newUser);
+
+  }
+  catch (error) {
+    return res.status(500).json({message: error.message});
+  }
 }
