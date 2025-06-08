@@ -32,7 +32,7 @@ const Icon = styled(Box)`
   color: #919191;
 `;
 
-const Search = () => {
+const Search = ({setText}) => {
   return (
     <Component>
       <Wrapper>
@@ -41,6 +41,7 @@ const Search = () => {
       </Icon>
       <InputField
         placeholder="Search or start New Chat"
+        onChange={(e) => setText(e.target.value)}
       />
       </Wrapper>
     </Component>

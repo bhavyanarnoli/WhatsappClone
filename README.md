@@ -8,6 +8,8 @@
 # Client
 ### client code contains the frontend and the react feature of login: (React.js & Material-UI)
 #### Google authentication for making accounts done using: **https://www.npmjs.com/package/@react-oauth/google** && use 
+#### Shows each user apart from the one logged in the conversation section
+
 #### the page only works on : localhost:3000 only
 ## Service
   ### api.js
