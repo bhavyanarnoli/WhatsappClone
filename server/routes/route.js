@@ -58,7 +58,6 @@ router.get('/upload-health', (req, res) => {
   });
 });
 
-// File upload endpoint
 router.post('/file/upload', async (req, res) => {
   if (!isUploadReady) {
     try {
