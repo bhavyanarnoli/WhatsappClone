@@ -22,11 +22,9 @@ mongoose.set('strictQuery', false);
 
 
 
-// Initialize upload system variables
 let uploadMiddleware = null;
 let isUploadReady = false;
 
-// Initialize the upload system
 export const initUploadSystem = async () => {
   try {
     console.log('⏳ Initializing upload system...');
@@ -43,10 +41,10 @@ export const initUploadSystem = async () => {
     }).single('file');
 
     isUploadReady = true;
-    console.log('✅ Upload system ready');
+    console.log(' Upload system ready');
     return uploadMiddleware;
   } catch (err) {
-    console.error('❌ Upload system initialization failed:', err);
+    console.error(' Upload system initialization failed:', err);
     throw err;
   }
 };
