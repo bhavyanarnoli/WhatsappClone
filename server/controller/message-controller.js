@@ -3,7 +3,16 @@ import Conversation from '../model/Conversation.js';
 
 export const newMessage = async (req, res) => {
   try {
-    const newMessage = new Message(req.body);
+    const newMessage = new Message(
+      {
+        conversationId: req.body.conversationId,
+        receiverId: req.body.receiverId,
+        senderId: req.body.senderId,
+        type: req.body.type,
+        text: req.body.text,
+      
+      }
+  );
     await newMessage.save();
     await Conversation.findByIdAndUpdate(
       req.body.conversationId,
