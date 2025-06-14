@@ -21,9 +21,12 @@ router.post('/messages/get/:id', getMessages);
 mongoose.set('strictQuery', false);
 
 
-let uploadMiddleware;
+
+// Initialize upload system variables
+let uploadMiddleware = null;
 let isUploadReady = false;
 
+// Initialize the upload system
 export const initUploadSystem = async () => {
   try {
     console.log('⏳ Initializing upload system...');
@@ -41,39 +44,36 @@ export const initUploadSystem = async () => {
 
     isUploadReady = true;
     console.log('✅ Upload system ready');
+    return uploadMiddleware;
   } catch (err) {
     console.error('❌ Upload system initialization failed:', err);
+    throw err;
   }
 };
 
 
 router.get('/upload-health', (req, res) => {
-  initUploadSystem();
-
   res.json({
     ready: isUploadReady,
     dbState: mongoose.connection.readyState,
     timestamp: new Date()
   });
-  console.log('Upload health check performed');
-  console.log('Upload system ready:', isUploadReady);
-  console.log('Database connection state:', mongoose.connection.readyState);
-  console.log('Current timestamp:', new Date());
-  console.log('Upload middleware:', uploadMiddleware ? 'initialized' : 'not initialized');
 });
 
-router.post('/file/upload', (req, res) => {
-
+// File upload endpoint
+router.post('/file/upload', async (req, res) => {
   if (!isUploadReady) {
-    return res.status(503).json({
-      success: false,
-      error: 'Upload system initializing',
-      retryAfter: 5
-    });
+    try {
+      await initUploadSystem();
+    } catch (err) {
+      return res.status(503).json({
+        success: false,
+        error: 'Upload system initialization failed',
+        details: err.message
+      });
+    }
   }
-  console.log('File upload request received');
-
-
+  
   uploadMiddleware(req, res, (err) => {
     if (err) {
       console.error('Upload error:', err);
@@ -89,9 +89,8 @@ router.post('/file/upload', (req, res) => {
         success: false,
         error: 'No file received'
       });
-    } 
-    console.log('File uploaded in backend');
-
+    }
+    console.log('File uploaded successfully:', req.file);
     res.json({
       success: true,
       fileId: req.file.id,
@@ -99,5 +98,7 @@ router.post('/file/upload', (req, res) => {
     });
   });
 });
+
+
 
 export default router;

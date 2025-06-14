@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import route from './routes/route.js';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import {initUploadSystem} from './routes/route.js'; // Import the upload system initialization function
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -38,8 +39,9 @@ connectDB().then(() => {
     res.status(500).send('Something broke!');
   });
 
+  initUploadSystem().then(() => {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
-    console.log(`Database connected successfully`);
+  });
   });
 });

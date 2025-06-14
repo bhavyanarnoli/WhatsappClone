@@ -1,25 +1,22 @@
 import mongoose from 'mongoose';
 import { GridFSBucket } from 'mongodb';
-import crypto from 'crypto';
 import path from 'path';
-import { promisify } from 'util';
 
-const randomBytes = promisify(crypto.randomBytes);
-let bucket;
-let isStorageReady = false;
+let storageInstance = null;
+let bucketInstance = null;
 
 const createStorage = () => {
-  bucket = new GridFSBucket(mongoose.connection.db, {
+  bucketInstance = new GridFSBucket(mongoose.connection.db, {
     bucketName: 'uploads'
   });
-  
+
   return {
-    _handleFile: async (req, file, cb) => {
+    _handleFile: (req, file, cb) => {
       try {
         const fileId = new mongoose.mongo.ObjectId();
         const filename = `${fileId.toString()}${path.extname(file.originalname)}`;
         
-        const uploadStream = bucket.openUploadStream(filename, {
+        const uploadStream = bucketInstance.openUploadStream(filename, {
           _id: fileId,
           metadata: {
             originalName: file.originalname,
@@ -33,7 +30,7 @@ const createStorage = () => {
           .on('finish', () => {
             cb(null, {
               id: uploadStream.id,
-              filename: filename,
+              filename,
               size: uploadStream.length,
               mimetype: file.mimetype
             });
@@ -43,34 +40,34 @@ const createStorage = () => {
       }
     },
     _removeFile: (req, file, cb) => {
-      bucket.delete(file.id, cb);
+      bucketInstance.delete(file.id, cb);
     }
   };
 };
 
 export const initializeStorage = async () => {
-  if (isStorageReady) return bucket;
+  if (storageInstance) return storageInstance;
 
-  try {
-    if (mongoose.connection.readyState !== 1) {
-      await new Promise(resolve => {
-        mongoose.connection.once('connected', resolve);
-      });
-    }
-
-    createStorage();
-    isStorageReady = true;
-    console.log('✅ Storage initialized successfully');
-    return bucket;
-  } catch (err) {
-    console.error('❌ Storage initialization failed:', err);
-    throw err;
+  if (mongoose.connection.readyState !== 1) {
+    await new Promise(resolve => {
+      mongoose.connection.once('connected', resolve);
+    });
   }
+
+  storageInstance = createStorage();
+  return storageInstance;
 };
 
 export const getStorage = () => {
-  if (!isStorageReady) {
-    throw new Error('Storage not initialized');
+  if (!storageInstance) {
+    throw new Error('Storage not initialized. Call initializeStorage() first.');
   }
-  return bucket;
+  return storageInstance;
+};
+
+export const getBucket = () => {
+  if (!bucketInstance) {
+    throw new Error('Bucket not initialized. Call initializeStorage() first.');
+  }
+  return bucketInstance;
 };

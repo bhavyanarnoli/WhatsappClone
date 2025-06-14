@@ -106,27 +106,32 @@ export const getMessages = async (id) => {
 //     }
 // };
 // api.js
-export const uploadFile = async (file, maxRetries = 3) => {
-  const form = new FormData();
-  form.append('file', file);          // 👈 field name *must* match single('file')
+export const uploadFile = async (formData, maxRetries = 3) => {
 
-  for (let attempt = 0; attempt < maxRetries; /* ++ in loop */) {
-    try {
-      const { data: health } = await axios.get(`${url}/upload-health`);
-      if (!health.ready) {                       // server still warming up
-        await new Promise(r => setTimeout(r, (health.retryAfter || 5) * 1000));
-        continue;
-      }
-
-      const { data } = await axios.post(`${url}/file/upload`, form, {
-        onUploadProgress: e =>
-          console.log(`Upload ${Math.round((e.loaded * 100) / e.total)}%`)
-      });
-      return data;                               // 🎉 done
-    } catch (err) {
-      attempt++;
-      if (attempt >= maxRetries) throw err;
-      await new Promise(r => setTimeout(r, Math.min(1000 * 2 ** attempt, 10000)));
+  try {
+    const health = await axios.get(`${url}/upload-health`);
+    console.log('Health check:', health.data);
+    
+    if (!health.data.ready) {
+      throw new Error('Upload system not ready');
     }
+
+    const response = await axios.post(`${url}/file/upload`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      onUploadProgress: (progressEvent) => {
+        const percentCompleted = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total
+        );
+        console.log(`Upload progress: ${percentCompleted}%`);
+      }
+    });
+    
+    console.log("Upload successful:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Upload failed:', error);
+    throw error;
   }
 };
