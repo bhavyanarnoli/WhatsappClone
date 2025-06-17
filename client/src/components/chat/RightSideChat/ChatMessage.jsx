@@ -1,7 +1,7 @@
 import { Box, CircularProgress, Typography } from '@mui/material';
 import styled from '@emotion/styled';
 import ChatFooter from './ChatFooter';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 import { getMessages, newMessage, uploadFile } from '../../../service/api';
 import { AccountContext } from '../../../context/AccountProvider';
 import Message from './Message';
@@ -45,7 +45,7 @@ const ChatMessage = ({ person, conversation }) => {
   const [uploadError, setUploadError] = useState(null);
   const account = useContext(AccountContext);
   const [messageFlag, setMessageFlag] = useState(false);
-
+  const scrollRef = useRef();
   useEffect(() => {
     const getMessageDetails = async () => {
       if (conversation?._id) {
@@ -60,10 +60,13 @@ const ChatMessage = ({ person, conversation }) => {
         }
       }
     };
-    
     getMessageDetails();
   }, [person._id, conversation._id, messageFlag]);
-
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
   const handleFileUpload = async (file) => {
     if (!file) return;
     
@@ -81,18 +84,19 @@ const ChatMessage = ({ person, conversation }) => {
         );
         setUploadProgress(percentCompleted);
       });
-      console.log('File in chatmessage:', file);
-      await newMessage({
+
+
+    const isImage = file.type.startsWith('image/');
+
+    await newMessage({
       senderId: account.account.sub,
       receiverId: person.sub,
       conversationId: conversation._id,
       type: 'file',
-      text: file.name,
-      file: file
-      });
+      text: response.url,
+      isImage: isImage
+    });
 
-
-      // Refresh messages
       setMessageFlag(prev => !prev);
     } catch (error) {
       console.error('Upload failed:', error);
@@ -105,7 +109,9 @@ const ChatMessage = ({ person, conversation }) => {
 
   const sendText = async (e) => {
     const code = e.keyCode || e.which;
+    
     if (code === 13 && value.trim()) {
+      
       try {
         setLoading(true);
         
@@ -135,7 +141,7 @@ const ChatMessage = ({ person, conversation }) => {
         ) : (
           <>
             {messages.map((message, index) => (
-              <Container key={index}>
+              <Container key={index} ref={scrollRef}> 
                 <Message message={message} />
               </Container>
             ))}

@@ -38,7 +38,7 @@ const ChatFooter = ({ sendText, setValue, value, onFileChange }) => {
     const file = e.target.files[0];
     if (file) {
       onFileChange(e.target.files[0]);
-      setValue(e.target.files[0].name);
+      setValue('');
     }
   };
 

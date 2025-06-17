@@ -79,33 +79,6 @@ export const getMessages = async (id) => {
   }
 }
 
-// export const uploadFile = async (formData) => {
-//     try {
-//         console.log(' file received for upload:', formData.get('file'));
-//         const response = await axios.post(`${url}/file/upload`, formData, {
-//             headers: {
-//                 'Content-Type': 'multipart/form-data',
-//             },
-//             timeout: 30000,
-//             onUploadProgress: (progressEvent) => {
-//                 const percentCompleted = Math.round(
-//                     (progressEvent.loaded * 100) / progressEvent.total
-//                 );
-//                 console.log(`Upload progress: ${percentCompleted}%`);
-//             }
-//         });
-//         console.log('Upload successful:', response.data);
-//         return response.data;
-//     } catch (error) {
-//         console.error('Upload failed with details:', {
-//             config: error.config,
-//             response: error.response?.data,
-//             stack: error.stack
-//         });
-//         throw error;
-//     }
-// };
-// api.js
 export const uploadFile = async (formData, maxRetries = 3) => {
 
   try {

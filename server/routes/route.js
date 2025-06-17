@@ -5,7 +5,7 @@ import { getMessages, newMessage } from '../controller/message-controller.js';
 import mongoose from 'mongoose';
 import multer from 'multer';    
 import {initializeStorage, getStorage} from '../utils/storage.js';
-
+import { getImage } from '../utils/storage.js';
 const router = express.Router();
 
 router.post('/add', addUser);
@@ -59,6 +59,7 @@ router.get('/upload-health', (req, res) => {
 });
 
 router.post('/file/upload', async (req, res) => {
+   console.log('logging file upload request:', req.body);
   if (!isUploadReady) {
     try {
       await initUploadSystem();
@@ -86,16 +87,22 @@ router.post('/file/upload', async (req, res) => {
         success: false,
         error: 'No file received'
       });
+
     }
-    console.log('File uploaded successfully:', req.file);
-    res.json({
-      success: true,
-      fileId: req.file.id,
-      filename: req.file.filename
+    const imageUrl = `http://localhost:8000/file/${req.file.filename}`;
+
+    return res.status(200).json({
+      url: `http://localhost:8000/file/${req.file.filename}`,
+      filename: req.file.filename,
+      originalName: req.file.originalname,
+      type: req.file.mimetype,
+      size: req.file.size
     });
+
+
   });
 });
 
-
+router.get('/file/:filename', getImage);
 
 export default router;

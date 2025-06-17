@@ -1,50 +1,76 @@
-import { useEffect, useState, useContext} from "react";
-import {Box,styled, Divider} from "@mui/material";
+import { useEffect, useState, useContext, useMemo } from "react";
+import {Box, styled, Divider, Skeleton} from "@mui/material";
 import { getUsers } from "../../../service/api";
 import { AccountContext } from "../../../context/AccountProvider";
-import { Suspense, lazy } from "react";
+import Conversation from "./conversation";
 import React from "react";
-const Conversation = lazy(() => import("./conversation"));
 
 const Component = styled(Box)`
   height: 81vh;
   overflow: overlay;
 `;
+
 const StyledDivider = styled(Divider)`
   margin: 0 0 0 70px;
   background-color: #e9edef;
-`
+`;
+
 const Conversations = ({text}) => {
   const { account } = useContext(AccountContext);
-
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      let response = await getUsers();
-      if (text) {
-        response = response.filter(user => user.name.toLowerCase().includes(text.toLowerCase())); 
+      setLoading(true);
+      try {
+        let response = await getUsers();
+        if (text) {
+          response = response.filter(user => 
+            user.name.toLowerCase().includes(text.toLowerCase())
+          ); 
+        }
+        setUsers(response);
+      } finally {
+        setLoading(false);
       }
-      setUsers(response);
     };
     fetchData();
   }, [text]);
 
-return (
-  <Suspense fallback={<div>Loading...</div>}>
-    <Component>
-      {
-      users.map(user => {
-        if (user.sub === account.sub) return null;
-        return (
-          <React.Fragment key={user._id}>
-            <Conversation user={user} />
+  const filteredUsers = useMemo(() => 
+    users.filter(user => user.sub !== account.sub),
+    [users, account.sub]
+  );
+
+  if (loading) {
+    return (
+      <Component>
+        {[...Array(8)].map((_, index) => (
+          <React.Fragment key={index}>
+            <Box display="flex" alignItems="center" p={2}>
+              <Skeleton variant="circular" width={40} height={40} />
+              <Box ml={2} width="100%">
+                <Skeleton variant="text" width="60%" />
+              </Box>
+            </Box>
             <StyledDivider />
           </React.Fragment>
-        )
-      })}
+        ))}
+      </Component>
+    );
+  }
+
+  return (
+    <Component>
+      {filteredUsers.map(user => (
+        <React.Fragment key={user._id}>
+          <Conversation user={user} />
+          <StyledDivider />
+        </React.Fragment>
+      ))}
     </Component>
-  </Suspense>
-)};
+  );
+};
 
 export default Conversations;
