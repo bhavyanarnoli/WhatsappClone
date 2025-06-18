@@ -71,34 +71,32 @@ A full-stack Whatsapp Clone application built with React.js (frontend) and Node.
   ```
   The client runs on [http://localhost:3000](http://localhost:3000).
 
-> **Note:** The frontend is configured to work only on `localhost:3000` and the backend on `localhost:8000`.
+**Note:** The frontend is configured to work only on `localhost:3000` and the backend on `localhost:8000`.
 
-## Project Structure
+# WhatsApp Clone Project Structure
 
-```
-```
 WhatsappClone/
-├── client/                # React frontend (Material-UI, Google Auth)
-│   ├── public/
-│   └── src/
-│       ├── components/        # UI components
-│       ├── services/
-│       │   └── api.js         # Handles API requests (e.g., POST to /add)
-│       ├── App.js
-│       └── ...
-├── server/                # Node.js/Express backend
-│   ├── controllers/
-│   │   └── user-controller.js # Handles user-related logic
-│   ├── database/
-│   │   └── data.js            # Connects to MongoDB (async/promise)
-│   ├── models/
-│   ├── routes/
-│   └── ...
-├── socket/                # Dedicated Socket.io server for real-time messaging
-│   ├── index.js
-│   └── ...
+├── client/ # React frontend (Material-UI, Google Auth)
+│ ├── public/
+│ └── src/
+│ ├── components/ # UI components
+│ ├── services/
+│ │ └── api.js # Handles API requests (e.g., POST to /add)
+│ ├── App.js
+│ └── ...
+├── server/ # Node.js/Express backend
+│ ├── controllers/
+│ │ └── user-controller.js # Handles user-related logic
+│ ├── database/
+│ │ └── data.js # Connects to MongoDB (async/promise)
+│ ├── models/
+│ ├── routes/
+│ └── ...
+├── socket/ # Dedicated Socket.io server
+│ ├── index.js # Real-time messaging setup
+│ └── ...
 └── README.md
-```
+
 
 ## Additional Notes
 
