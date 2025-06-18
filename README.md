@@ -97,7 +97,7 @@ WhatsappClone/
 │   ├── index.js             # Socket.io server configuration
 │   └── ...                  # Socket event handlers
 └── README.md                # Project documentation
-
+```
 ## Additional Notes
 
 - **API Endpoints:** The main endpoint for adding users is `POST /add`, managed in `client/services/api.js`.
