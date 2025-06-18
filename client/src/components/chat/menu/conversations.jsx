@@ -16,9 +16,16 @@ const StyledDivider = styled(Divider)`
 `;
 
 const Conversations = ({text}) => {
-  const { account } = useContext(AccountContext);
+  const { account , socket, setActiveUsers} = useContext(AccountContext);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    socket.current.emit("addUsers", account);
+    socket.current.on("getUsers", (users) => {
+      setActiveUsers(users);
+    });
+  }, [account]);
 
   useEffect(() => {
     const fetchData = async () => {

@@ -37,14 +37,14 @@ const Status = styled(Typography)`
 
 
 const ChatHeader = ( {account} ) => {
-
+  const { activeUsers } = useContext(AccountContext);
     return (
       
       <Component>
           <Image src={ account.picture} alt="dp"  />
           <Box>
           <Name> {account.name} </Name>
-          <Status> Last seen at 12:00 PM</Status>
+          <Status> {activeUsers?.find(user => user.sub === account.sub) ? 'Online' : 'Offline' }</Status>
           </Box>
           <RightContainer>
             <Search/>

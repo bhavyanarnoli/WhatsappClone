@@ -5,6 +5,7 @@ export const AccountContext = createContext(null);
 const AccountProvider = ({children}) => {
   const [account, setAccount] = useState();
   const [person, setPerson] = useState({});
+  const [activeUsers, setActiveUsers] = useState([]);
   const socket = useRef();
   useEffect( () => {
     socket.current = io('ws://localhost:9000')
@@ -14,7 +15,10 @@ const AccountProvider = ({children}) => {
     account,
     setAccount,
     person,
-    setPerson, socket
+    setPerson,
+    socket,
+    activeUsers,
+    setActiveUsers
     } }>
 
     {children}
