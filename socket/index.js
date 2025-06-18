@@ -24,8 +24,16 @@ io.on("connection", (socket) => {
     io.emit("getUsers", users);
  })
   socket.on("sendMessage", (data) => {
-    const user = getUser(data.receiverId);  
-    io.to(user.socketId).emit('getMessage', data)
-  })    
+    
+    const user = getUser(data.receiverId);
+    
+    if (!user) {
+      console.error(`User ${data.receiverId} not found in active users`);
+      return;
+    }
+
+    console.log(`Sending message to user ${user.sub} on socket ${user.socketId}`);
+    io.to(user.socketId).emit('getMessage', data);
+  });
 });
 

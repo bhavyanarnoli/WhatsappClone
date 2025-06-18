@@ -37,15 +37,29 @@ const UploadProgress = styled(Box)`
 `;
 
 const ChatMessage = ({ person, conversation }) => {
+  
   const [value, setValue] = useState('');
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
-  const account = useContext(AccountContext);
+  const { account, socket } = useContext(AccountContext);
   const [messageFlag, setMessageFlag] = useState(false);
+  const [incomingMessage, setIncomingMessage] = useState(null);
   const scrollRef = useRef();
+
+  useEffect(() => {
+    socket.current.on('getMessage', (data) => {  
+      setIncomingMessage({...data, createdAt: Date.now() });
+    })
+  },[]);
+ 
+  useEffect(() => {
+    incomingMessage && conversation?.members?.includes(incomingMessage.senderId) &&
+    setMessages((prev) => [...prev, incomingMessage]);
+  }, [incomingMessage, conversation]);
+
   useEffect(() => {
     const getMessageDetails = async () => {
       if (conversation?._id) {
@@ -87,17 +101,20 @@ const ChatMessage = ({ person, conversation }) => {
 
 
     const isImage = file.type.startsWith('image/');
-
-    await newMessage({
-      senderId: account.account.sub,
+ const message = ({
+      senderId: account.sub,
       receiverId: person.sub,
       conversationId: conversation._id,
       type: 'file',
       text: response.url,
       isImage: isImage
     });
+    socket.current.emit('sendMessage', message);
+    setUploadProgress(100);
 
-      setMessageFlag(prev => !prev);
+
+    await newMessage(message);
+    setMessageFlag(prev => !prev);
     } catch (error) {
       console.error('Upload failed:', error);
       setUploadError(error.message || 'File upload failed');
@@ -115,14 +132,15 @@ const ChatMessage = ({ person, conversation }) => {
       try {
         setLoading(true);
         
-        await newMessage({
-          senderId: account.account.sub,
+        const message = ({
+          senderId: account.sub,
           receiverId: person.sub,
           conversationId: conversation._id,
           type: 'text',
           text: value
-        });
-
+        })
+        socket.current.emit('sendMessage', message);
+        await newMessage(message);
         setValue('');
         setMessageFlag(prev => !prev);
       } catch (error) {
