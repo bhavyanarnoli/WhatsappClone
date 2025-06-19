@@ -35,5 +35,9 @@ io.on("connection", (socket) => {
     console.log(`Sending message to user ${user.sub} on socket ${user.socketId}`);
     io.to(user.socketId).emit('getMessage', data);
   });
+  socket.on("disconnect", () => {
+    users = users.filter(user => user.socketId !== socket.id);
+    io.emit("getUsers", users);
+  });
 });
 
