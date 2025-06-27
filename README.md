@@ -70,6 +70,13 @@ A full-stack Whatsapp Clone application built with React.js (frontend) and Node.
   npm start
   ```
   The client runs on [http://localhost:3000](http://localhost:3000).
+  
+3. **Start the socket:**
+  ```bash
+  cd socket
+  npm start
+  ```
+  The client runs on [http://localhost:9000](http://localhost:9000).
 
 **Note:** The frontend is configured to work only on `localhost:3000` and the backend on `localhost:8000`.
 
